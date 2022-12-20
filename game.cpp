@@ -259,7 +259,9 @@ room* go(room* currentRoom, map<char*, room*>&exit) {
 
     //search for existing room
     map<char*, room*>::iterator i;
-    
+
+    //ITERATOR DOESN'T WORK ON MAC (can't read in second direction value)
+    //i++ doesn't work, doesn't advance
     for (i = currentRoom->getExit().begin(); i != currentRoom->getExit().end(); ++i) {
       cout << "searching" << endl;
       if (strcmp(secondWord, i->first) == false) {
