@@ -6,16 +6,28 @@
 #include "item.h"
 using namespace std;
 
-room* go(int&id, room* currentRoom, char secondWord[]);
+/*
+  Title: Zuul
+  Creator: Helen Wang
+  Date: Dec 19, 2022
+  Program: An interactive word game where users can move between rooms,
+  pick up & drop items, view their inventory,
+  and win the game by picking the baby up.
+*/
+
+//Intialize functions
+//room* go(int&id, room* currentRoom, char secondWord[]);
+room* go(room* currentRoom, map<char*, room*>&exit);
 bool get(room* currentRoom, vector<item*>&inven); 
 void getInven(vector<item*>&inven);
 void drop(room* currentRoom, vector<item*>&inven);
 
 int main() {
+  //Intialize variables
   vector<room*> rooms;
   map<char*, room*> exits;
   vector<item*> inven;
-  int id = 3;
+  //int id = 3;
   room* currentRoom;
   char GO[3] = "GO";
   char GET[4] = "GET";
@@ -26,14 +38,11 @@ int main() {
   char input[20];
   bool playing = true;
   char secondWord[20];
-
   
   //Create rooms & items
   room* kitchen = new room((char*)"in the kitchen");
   room* bathroom = new room((char*)"in the bathroom");
-
-
-    room* bedroom = new room((char*)"in the bedroom");
+  room* bedroom = new room((char*)"in the bedroom");
   room* dungeon = new room((char*)"in the dungeon");
   room* balcony = new room((char*)"in the balcony");
   room* basement = new room((char*)"in the basement");
@@ -56,17 +65,14 @@ int main() {
   
   //intialize room exits                                                      
   kitchen->setExit((char*)"east", bathroom);
-  //kitchen->setExit((char*)"south", sofa);
+  kitchen->setExit((char*)"south", sofa);
 
-  
   bathroom->setExit((char*)"east", bedroom);
   bathroom->setExit((char*)"west", kitchen);
-
   
-  //bedroom->setExit((char*)"east", dungeon);
+  bedroom->setExit((char*)"east", dungeon);
   bedroom->setExit((char*)"west", bathroom);
 
-  /*
   dungeon->setExit((char*)"east", balcony);
   dungeon->setExit((char*)"west", bedroom);
 
@@ -102,8 +108,8 @@ int main() {
 
   sofa->setExit((char*)"south", attic);
   sofa->setExit((char*)"north", kitchen);
-  */
-  
+
+  //Set current room
   currentRoom = kitchen;
 
   //Intialize room items
@@ -121,7 +127,8 @@ int main() {
   cout << "Type 'help' if you need help." << endl;
   currentRoom->printDescription();
   cout << endl;
-  
+
+  //While user still wants to play, or hasn't won yet...
   while (playing) {
     cout << endl;
     cout << "Type in a command (GO, GET, HELP, DROP, INVENTORY or QUIT)" << endl;
@@ -133,7 +140,8 @@ int main() {
     }
     
     if (strcmp(input, GO) == false) {
-      currentRoom = go(id, currentRoom, secondWord);
+      //currentRoom = go(id, currentRoom, secondWord);
+      currentRoom = go(currentRoom, exits);
       cout << endl;
     }
     
@@ -172,6 +180,7 @@ int main() {
   }
 }
 
+//User can pick up an item from a room
 bool get(room* currentRoom, vector<item*>&inven) {
   cout << "What item do you want to pick up?" << endl;
   char input [20];
@@ -180,8 +189,10 @@ bool get(room* currentRoom, vector<item*>&inven) {
 
   if(strcmp(input, "baby food")==0 || strcmp(input, "spoon") == 0) {
     cout << "You have picked it up" << endl;
-    
-  } else if (strcmp(input, "baby") == 0) {
+  }
+
+  //Winning condition: picking up the baby
+  else if (strcmp(input, "baby") == 0) {
     cout << "You picked up the baby" << endl;
     cout << "You win" << endl;
     return false;
@@ -197,6 +208,7 @@ bool get(room* currentRoom, vector<item*>&inven) {
   return true;
 }
 
+//Drop an item that you've picked up before
 void drop(room* currentRoom, vector<item*>&inven) {
   cout << "What do you want to drop?" << endl;
   char input[20];
@@ -209,7 +221,6 @@ void drop(room* currentRoom, vector<item*>&inven) {
   }
   item* drop;
   
-  //push to current room
   //currentRoom->setItem(drop);
 
   //remove from inventory
@@ -224,6 +235,7 @@ void drop(room* currentRoom, vector<item*>&inven) {
   currentRoom->setItem(drop);
 }
 
+//View your current inventory (items you've collected)
 void getInven(vector<item*>&inven) {
   //print inventory
   cout << "Inventory: ";
@@ -233,24 +245,31 @@ void getInven(vector<item*>&inven) {
   cout << endl;
 }
 
-room* go(int&id, room* currentRoom, char secondWord[]) {
+//Go to a room through exits
+room* go(room* currentRoom, map<char*, room*>&exit) {
   cout << endl;
+  char secondWord[20];
   currentRoom->printDescription();
   //currentRoom->printItem();
   cout << "Which direction do you want to go? (north, east, south, west)" << endl;
   cin.get(secondWord, 20);
   cin.ignore();
 
-  if (strcmp(secondWord, "north") == false || strcmp(secondWord, "south") == false || strcmp(secondWord, "east") == false || strcmp(secondWord, "west") == false) {
+  if ((strcmp(secondWord, "north") == 0) || (strcmp(secondWord, "south") == 0) || (strcmp(secondWord, "east") == 0) || (strcmp(secondWord, "west") == 0)) {
+
+    //search for existing room
     map<char*, room*>::iterator i;
     
     for (i = currentRoom->getExit().begin(); i != currentRoom->getExit().end(); ++i) {
-    
-   if (strcmp(secondWord, i->first) == false) {
-     currentRoom = i->second;
-     }
+      cout << "searching" << endl;
+      if (strcmp(secondWord, i->first) == false) {
+	currentRoom = i->second;
+	break;
+      }
     }
-   
+  }
+  else {
+    cout << "There is no exit there" << endl;
   }
 
    currentRoom->printDescription();

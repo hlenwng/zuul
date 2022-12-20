@@ -7,8 +7,16 @@
 #include "item.h"
 using namespace std;
 
+/*
+  Creator: Helen Wang
+  Date: Dec 19, 2022
+  Program: Header file for room's class.
+*/
+
 class room {
  public:
+
+  //Declare functions
   room();
   room(char* name);
   void setExit(char* direction, room* neighbor);
@@ -20,7 +28,8 @@ class room {
   void printDescription();
   int getID();
   
- private:
+private:
+  //Intialize functions
   vector<item*> items;
   int id;
   map<char*, room*> exits;
